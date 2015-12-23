@@ -1,0 +1,36 @@
+{{ $global := . }}
+resources:
+- name: ci
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/myproject-ci.git
+{{range .Repos}}
+- name: {{.Name}}
+  type: git
+  source:
+    uri: {{.Repo}}
+    branch: {{.Branch}}
+{{end}}
+
+jobs:
+{{range .Repos}}
+- name: {{.Name}}
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: project
+      resource: {{.Name}}
+      trigger: true
+  - task: do-something
+    config:
+      platform: linux
+      image: "docker:///alpine"
+      run:
+        path: sh
+        args: ["-c","echo Hi"]
+      params:
+        PASSWORD: {{$global.Private.Password}}
+        SECRET: {{$global.Private.Secret}}
+{{end}}
+- name-{{.Private.Secret}}: {{.Private.Password}}

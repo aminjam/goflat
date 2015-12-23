@@ -1,0 +1,62 @@
+
+resources:
+- name: ci
+  type: git
+  source:
+    uri: https://github.com/cloudfoundry/myproject-ci.git
+
+- name: repo1
+  type: git
+  source:
+    uri: https://github.com/jane/repo1
+    branch: master
+
+- name: repo2
+  type: git
+  source:
+    uri: https://github.com/john/repo2
+    branch: develop
+
+
+jobs:
+
+- name: repo1
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: project
+      resource: repo1
+      trigger: true
+  - task: do-something
+    config:
+      platform: linux
+      image: "docker:///alpine"
+      run:
+        path: sh
+        args: ["-c","echo Hi"]
+      params:
+        PASSWORD: team3
+        SECRET: cloud-foundry
+
+- name: repo2
+  serial: true
+  plan:
+  - aggregate:
+    - get: ci
+    - get: project
+      resource: repo2
+      trigger: true
+  - task: do-something
+    config:
+      platform: linux
+      image: "docker:///alpine"
+      run:
+        path: sh
+        args: ["-c","echo Hi"]
+      params:
+        PASSWORD: team3
+        SECRET: cloud-foundry
+
+- name-cloud-foundry: team3
+
