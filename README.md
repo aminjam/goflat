@@ -104,12 +104,12 @@ func NewPrivate() *privateAlias {
 }
 ```
 Each of the input files are required to have 4 things:
-* A struct named after the filename (e.g. filename `hello-world.go` should have `HelloWorld` struct). If the struct name differs from the filename convention, you can optionally provide the name of the struct (e.g. -i <(lpass show 'file.go' --notes):Private)
+* A struct named after the filename (e.g. filename `hello-world.go` should have `HelloWorld` struct). If the struct name differs from the filename convention, you can optionally provide the name of the struct (e.g. `-i <(lpass show 'file.go' --notes):Private`)
 * A `New{{.StructName}}` function
 * An Unmarshaller `Flat()` function that serializes the object
 * A package name should always be `main`
 
-Similarly, we can also define `repos.go` as an array of object to uses within `{{range .Repos}}`
+Similarly, we can also define `repos.go` as an array of objects to use within `{{range .Repos}}`
 ```
 package main
 
