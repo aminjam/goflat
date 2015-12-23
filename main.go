@@ -9,7 +9,7 @@ import (
 
 type command struct {
 	Template string   `short:"t" long:"template" description:"Template Path e.g. /PATH/TO/file.{yml,json}"`
-	Inputs   []string `short:"i" long:"inputs" description:"Path to input files"`
+	Inputs   []string `short:"i" long:"inputs" description:"Path to input files e.g. PATH/TO/privte.go [optional ':' struct name]"`
 }
 
 func main() {
@@ -22,7 +22,7 @@ func main() {
 	if err != nil {
 		checkError(fmt.Errorf("%s:%s", "cannot create temp directory", err.Error()))
 	}
-	defer os.RemoveAll(baseDir)
+	//defer os.RemoveAll(baseDir)
 
 	b, err := NewFlat(baseDir, args.Template, args.Inputs)
 	checkError(err)

@@ -20,7 +20,11 @@ type Flat struct {
 }
 
 func (f *Flat) cp(file string) (string, error) {
-	outFile := filepath.Join(f.BaseDir, filepath.Base(file))
+	base := filepath.Base(file)
+	if !strings.HasSuffix(base, ".go") {
+		base += ".go"
+	}
+	outFile := filepath.Join(f.BaseDir, base)
 	in, err := os.Open(file)
 	if err != nil {
 		return "", err
@@ -41,14 +45,14 @@ func (f *Flat) cp(file string) (string, error) {
 
 func (f *Flat) setInputs(files []string) error {
 	for k, v := range files {
-		file, err := f.cp(v)
+		orgFile, structName := extractNames(v)
+		file, err := f.cp(orgFile)
 		if err != nil {
 			return fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 		}
 		f.Inputs[k].Path = file
-		name := structName(v)
-		f.Inputs[k].StructName = name
-		f.Inputs[k].VarName = strings.ToLower(name)
+		f.Inputs[k].StructName = structName
+		f.Inputs[k].VarName = strings.ToLower(structName)
 	}
 	return nil
 }
@@ -153,12 +157,18 @@ func tmpDir() (string, error) {
 	return ioutil.TempDir(wd, caller)
 }
 
-func structName(filename string) string {
-	name := filepath.Base(filename)
+func extractNames(input string) (fileName string, structName string) {
+	//optionally the structname can be passed via commandline with ":" seperator
+	if strings.Contains(input, ":") {
+		s := strings.Split(input, ":")
+		return s[0], s[1]
+	}
+	//go-flat convtion is to build a structname based on filename using strings Title convention
+	name := filepath.Base(input)
 	name = strings.Title(strings.Split(name, ".")[0])
 	name = strings.Replace(name, "-", "", -1)
 	name = strings.Replace(name, "_", "", -1)
-	return name
+	return input, name
 }
 
 const (

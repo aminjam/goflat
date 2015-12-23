@@ -56,9 +56,34 @@ var _ = Describe("GoFlat", func() {
 		wd, _ := os.Getwd()
 		template := filepath.Join(wd, "fixtures", "pipeline.yml")
 		inputFiles := []string{
-			filepath.Join(wd, "fixtures", "private.go"),
+			filepath.Join(wd, "fixtures", "private.go") + ":Private",
 			filepath.Join(wd, "fixtures", "repos.go"),
 		}
+
+		Describe("When input is not from a .go extension file", func() {
+			It("should successfully copy the file with an attached extension", func() {
+				tmpDir := os.TempDir()
+				defer os.RemoveAll(tmpDir)
+				orgFile := filepath.Join(wd, "fixtures", "a-private-note")
+				b, err := NewFlat(tmpDir, template, []string{
+					orgFile + ":Private",
+				})
+				Expect(err).To(BeNil())
+
+				var newFile string
+				for _, v := range b.Inputs {
+					if filepath.Base(v.Path) == "a-private-note.go" {
+						newFile = v.Path
+						break
+					}
+				}
+				Expect(newFile).ToNot(BeNil())
+				newFileInfo, err := os.Stat(newFile)
+				Expect(err).To(BeNil())
+				orgFileInfo, _ := os.Stat(orgFile)
+				Expect(orgFileInfo.Size()).To(Equal(newFileInfo.Size()))
+			})
+		})
 
 		Describe("When valid params", func() {
 			var (

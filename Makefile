@@ -5,7 +5,7 @@ PACKAGES=$(shell go list ./... | grep -v vendor | sort | uniq)
 BINARY_NAME=$(shell basename ${PWD})
 MAIN_PACKAGE="."
 
-all: format test build-dist
+all: format update-deps test build-dist
 
 build:
 	@$(CURDIR)/scripts/build.bash $(BINARY_NAME) $(MAIN_PACKAGE) dev
