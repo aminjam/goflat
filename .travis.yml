@@ -1,0 +1,10 @@
+
+language: go
+go:
+  - 1.5.2
+install:
+  - make update-deps
+script:  make test
+branches:
+  only:
+  - master

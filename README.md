@@ -1,4 +1,4 @@
-# goflat
+# goflat [![Build Status](https://travis-ci.org/aminjam/goflat.png?branch=master)](https://travis-ci.org/aminjam/goflat)
 A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, etc.) with secrets.
 
 ## Motivation
