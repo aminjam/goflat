@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	"github.com/jessevdk/go-flags"
 )
@@ -33,6 +35,12 @@ func main() {
 	b, err := NewFlat(baseDir, args.Template, args.Inputs)
 	checkError(err)
 	b.GoRun(os.Stdout, os.Stderr)
+}
+
+func tmpDir() (string, error) {
+	caller := filepath.Base(os.Args[0])
+	wd, _ := os.Getwd()
+	return ioutil.TempDir(wd, caller)
 }
 
 func checkError(err error) {

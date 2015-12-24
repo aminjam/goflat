@@ -24,7 +24,7 @@ var _ = Describe("GoFlat", func() {
 			Expect(err.Error()).To(ContainSubstring(ErrMissingOnDisk))
 		})
 		It("should catch invalid input files", func() {
-			tmpDir := os.TempDir()
+			tmpDir, _ := ioutil.TempDir(os.TempDir(), "")
 			defer os.RemoveAll(tmpDir)
 			wd, _ := os.Getwd()
 			template := filepath.Join(wd, "fixtures", "pipeline.yml")
@@ -39,7 +39,7 @@ var _ = Describe("GoFlat", func() {
 		})
 
 		It("should catch invalid template", func() {
-			tmpDir := os.TempDir()
+			tmpDir, _ := ioutil.TempDir(os.TempDir(), "")
 			defer os.RemoveAll(tmpDir)
 
 			invalid_template := "/WRONG/FILE.yml"
@@ -52,7 +52,6 @@ var _ = Describe("GoFlat", func() {
 		})
 	})
 	Context("", func() {
-
 		wd, _ := os.Getwd()
 		template := filepath.Join(wd, "fixtures", "pipeline.yml")
 		inputFiles := []string{
@@ -62,7 +61,7 @@ var _ = Describe("GoFlat", func() {
 
 		Describe("When input is not from a .go extension file", func() {
 			It("should successfully copy the file with an attached extension", func() {
-				tmpDir := os.TempDir()
+				tmpDir, _ := ioutil.TempDir(os.TempDir(), "")
 				defer os.RemoveAll(tmpDir)
 				orgFile := filepath.Join(wd, "fixtures", "a-private-note")
 				b, err := NewFlat(tmpDir, template, []string{
@@ -91,7 +90,7 @@ var _ = Describe("GoFlat", func() {
 				flat   *Flat
 			)
 			BeforeEach(func() {
-				tmpDir = os.TempDir()
+				tmpDir, _ = ioutil.TempDir(os.TempDir(), "")
 				b, err := NewFlat(tmpDir, template, inputFiles)
 				Expect(err).To(BeNil())
 				flat = b

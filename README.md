@@ -148,7 +148,7 @@ repos:
 	}
 }
 ```
-Note that each of the inputs can have their own serialization method, as long as the serialization library is in the main `$GOPATH`. Now we can run the example pipeline in the fixtures.
+Note that each of the inputs can have their own serialization method, as long as the serialization library is in the main `$GOPATH`. The fixtures require `go get gopkg.in/yaml.v2` library. Now we can run the example pipeline in the fixtures.
 ```
 goflat -t fixtures/pipeline.yml -i fixtures/repos.go -i fixtures/private.go
 ```

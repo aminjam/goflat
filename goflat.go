@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -149,12 +148,6 @@ func NewFlat(baseDir, template string, inputs []string) (*Flat, error) {
 		return nil, fmt.Errorf("%s:%s", "creating main.go", err.Error())
 	}
 	return f, nil
-}
-
-func tmpDir() (string, error) {
-	caller := filepath.Base(os.Args[0])
-	wd, _ := os.Getwd()
-	return ioutil.TempDir(wd, caller)
 }
 
 func extractNames(input string) (fileName string, structName string) {
