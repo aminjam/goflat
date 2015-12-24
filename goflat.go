@@ -163,7 +163,7 @@ func extractNames(input string) (fileName string, structName string) {
 		s := strings.Split(input, ":")
 		return s[0], s[1]
 	}
-	//go-flat convtion is to build a structname based on filename using strings Title convention
+	//goflat convention is to build a structname based on filename using strings Title convention
 	name := filepath.Base(input)
 	name = strings.Title(strings.Split(name, ".")[0])
 	name = strings.Replace(name, "-", "", -1)

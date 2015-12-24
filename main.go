@@ -10,6 +10,7 @@ import (
 type command struct {
 	Template string   `short:"t" long:"template" description:"Template Path e.g. /PATH/TO/file.{yml,json}"`
 	Inputs   []string `short:"i" long:"inputs" description:"Path to input files e.g. PATH/TO/privte.go [optional ':' struct name]"`
+	Version  bool     `short:"v" long:"version" description:"Show version"`
 }
 
 func main() {
@@ -18,11 +19,16 @@ func main() {
 	_, err := parser.Parse()
 	checkError(err)
 
+	if args.Version {
+		fmt.Println(Version + ersionPrerelease)
+		os.Exit(0)
+	}
+
 	baseDir, err := tmpDir()
 	if err != nil {
 		checkError(fmt.Errorf("%s:%s", "cannot create temp directory", err.Error()))
 	}
-	//defer os.RemoveAll(baseDir)
+	defer os.RemoveAll(baseDir)
 
 	b, err := NewFlat(baseDir, args.Template, args.Inputs)
 	checkError(err)

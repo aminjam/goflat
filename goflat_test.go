@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	. "github.com/aminjam/go-flat"
+	. "github.com/aminjam/goflat"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

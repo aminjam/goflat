@@ -1,29 +1,30 @@
-# go-flat
-A Go template flattener `go-flat` is for creating complex configuration files (JSON, YAML, etc.) with secrets.
+# goflat
+A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, etc.) with secrets.
 
 ## Motivation
-Building long YAML or JSON files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and it's unreliable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `go-flat` does. A small and simple go template flattener uses go runtime to dynamically create a template for parsing go structs.
+Building long YAML or JSON files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and it's unreliable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener uses go runtime to dynamically create a template for parsing go structs.
 
 ## Getting Started
 
 ### Run as executable
 ```
-go get github.com/aminjam/go-flat
-$GOPATH/bin/go-flat --help
+go get github.com/aminjam/goflat
+$GOPATH/bin/goflat --help
 ```
 ### Run from source
+Built with Go 1.5.2 and `GO15VENDOREXPERIMENT` flag.
 ```
-git clone https://github.com/aminjam/go-flat.git && cd go-flat
+git clone https://github.com/aminjam/goflat.git && cd goflat
 make update-deps
 make build
-./pkg/*/go-flat --help
+./pkg/*/goflat --help
 ```
 ### Usage
 ```
-go-flat -t FILE.{yml,json} -i private.go -i teams.go -i repos.go ...
+goflat -t FILE.{yml,json} -i private.go -i teams.go -i repos.go ...
 ```
 ```
-go-flat -t FILE.{yml,json} -i <(lpass show 'private.go' --notes):Private
+goflat -t FILE.{yml,json} -i <(lpass show 'private.go' --notes):Private
 ```
 ## Example
 
