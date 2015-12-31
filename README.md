@@ -1,8 +1,8 @@
 # goflat [![Build Status](https://travis-ci.org/aminjam/goflat.png?branch=master)](https://travis-ci.org/aminjam/goflat)
-A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, etc.) with secrets.
+A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, etc.).
 
 ## Motivation
-Building long YAML or JSON files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and it's unreliable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener uses go runtime to dynamically create a template for parsing go structs.
+Building long YAML or JSON files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
 
 ## Getting Started
 
@@ -67,88 +67,54 @@ jobs:
 {{end}}
 - name-{{.Private.Secret}}: {{.Private.Password}}
 ```
-We Have `Repos` and `Private` struct that contain some runtime data that needs to be parsed into the template. Here is a look at the checked-in `private.go`
+We have `Repos` and `Private` struct that contain some runtime data that needs to be parsed into the template. Here is a look at the checked-in `private.go`
 
 ```
 package main
 
-import "encoding/json"
-
 type Private struct {
-	Password string `json:"password"`
-	Secret   string `json:"secret"`
+	Password string
+	Secret   string
 }
 
-type privateAlias struct {
-	Data    string
-	Private Private
-}
-
-func (rs *privateAlias) Flat() (Private, error) {
-	data := []byte(rs.Data)
-	err := json.Unmarshal(data, &rs)
-	return rs.Private, err
-}
-
-func NewPrivate() *privateAlias {
-	return &privateAlias{
-		Data: `
-{
-	"private":{
-		"password":"team3",
-		"secret":"cloud-foundry"
-	}
-}
-`,
-		Private: Private{},
+func NewPrivate() Private {
+	return Private{
+		Password: "team3",
+		Secret:   "cloud-foundry",
 	}
 }
 ```
-Each of the input files are required to have 4 things:
+Each of the input files are required to have 2 things:
 * A struct named after the filename (e.g. filename `hello-world.go` should have `HelloWorld` struct). If the struct name differs from the filename convention, you can optionally provide the name of the struct (e.g. `-i <(lpass show 'file.go' --notes):Private`)
-* A `New{{.StructName}}` function
-* An Unmarshaller `Flat()` function that serializes the object
-* A package name should always be `main`
+* A `New{{.StructName}}` function that returns `{{.StructName}}` (e.g. `func NewPrivate() Private{}`)
 
 Similarly, we can also define `repos.go` as an array of objects to use within `{{range .Repos}}`
 ```
 package main
 
-import "gopkg.in/yaml.v2"
-
 type Repos []struct {
-	Name   string `yaml:"name"`
-	Repo   string `yaml:"repo"`
-	Branch string `yaml:"branch"`
+	Name   string
+	Repo   string
+	Branch string
 }
 
-type ReposStructure struct {
-	Data  string
-	Repos Repos
-}
-
-func (rs *ReposStructure) Flat() (Repos, error) {
-	data := []byte(rs.Data)
-	err := yaml.Unmarshal(data, &rs)
-	return rs.Repos, err
-}
-
-func NewRepos() *ReposStructure {
-	return &ReposStructure{
-		Data: `
-repos:
-- name: repo1
-  repo: https://github.com/jane/repo1
-  branch: master
-- name: repo2
-  repo: https://github.com/john/repo2
-  branch: develop
-`,
-		Repos: make(Repos, 2),
+func NewRepos() Repos {
+	return Repos{
+		{
+			Name:   "repo1",
+			Repo:   "https://github.com/jane/repo1",
+			Branch: "master",
+		},
+		{
+			Name:   "repo2",
+			Repo:   "https://github.com/john/repo2",
+			Branch: "develop",
+		},
 	}
 }
 ```
-Note that each of the inputs can have their own serialization method, as long as the serialization library is in the main `$GOPATH`. The fixtures require `go get gopkg.in/yaml.v2` library. Now we can run the example pipeline in the fixtures.
+Now we can run the example pipeline in the fixtures.
+
 ```
 goflat -t fixtures/pipeline.yml -i fixtures/repos.go -i fixtures/private.go
 ```

@@ -4,7 +4,6 @@ go:
 env:
   - GO15VENDOREXPERIMENT: 1
 install:
-  - go get gopkg.in/yaml.v2
   - make update-deps
 script:  make test
 branches:

@@ -124,7 +124,7 @@ var _ = Describe("GoFlat", func() {
 				Expect(err).To(BeNil())
 				Expect(data).To(ContainSubstring(fmt.Sprintf("data, err := ioutil.ReadFile(\"%s\")", flat.Template)))
 				Expect(data).To(ContainSubstring(fmt.Sprintf(
-					"%s, err := New%s().Flat()", flat.Inputs[0].VarName, flat.Inputs[0].StructName)))
+					"result.%s = New%s()", flat.Inputs[0].StructName, flat.Inputs[0].StructName)))
 			})
 			It("should output the parsed template ", func() {
 				var b bytes.Buffer

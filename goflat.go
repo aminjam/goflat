@@ -71,9 +71,6 @@ import (
 	"os"
 	"text/template"
 )
-type Flater interface {
-	Flat() (interface{}, error)
-}
 func checkError(err error, detail string) {
 	if err != nil {
 		fmt.Printf("Fatal error %s: %s ", detail, err.Error())
@@ -94,9 +91,7 @@ func main() {
 	}
 {{if gt (len .Inputs) 0}}
 {{range .Inputs}}
-	{{.VarName}}, err := New{{.StructName}}().Flat()
-	checkError(err, "calling New{{.StructName}}().Flat()")
-	result.{{.StructName}} = {{.VarName}}
+	result.{{.StructName}} = New{{.StructName}}()
 {{end}}
 {{end}}
 	var output bytes.Buffer
