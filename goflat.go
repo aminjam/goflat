@@ -69,6 +69,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"strings"
 	"text/template"
 )
 func checkError(err error, detail string) {
@@ -80,7 +81,10 @@ func checkError(err error, detail string) {
 func main() {
 	data, err := ioutil.ReadFile("{{.Template}}")
 	checkError(err, "reading template file")
-	tmpl, err := template.New("").Parse(string(data))
+	fm := template.FuncMap{
+		"join":	strings.Join,
+	}
+	tmpl, err := template.New("").Funcs(fm).Parse(string(data))
 	checkError(err, "parsing template file")
 	var result struct {
 {{if gt (len .Inputs) 0}}

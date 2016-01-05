@@ -34,3 +34,4 @@ jobs:
         SECRET: {{$global.Private.Secret}}
 {{end}}
 - name-{{.Private.Secret}}: {{.Private.Password}}
+- comma-seperated-repo-names: {{join .Repos.Names ","}}

@@ -59,4 +59,5 @@ jobs:
         SECRET: cloud-foundry
 
 - name-cloud-foundry: team3
+- comma-seperated-repo-names: repo1,repo2
 
