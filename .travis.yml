@@ -4,7 +4,7 @@ go:
 env:
   - GO15VENDOREXPERIMENT: 1
 install:
-  - make update-deps
+  - make init
 script:  make test
 branches:
   only:
