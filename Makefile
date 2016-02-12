@@ -1,11 +1,9 @@
-GOTOOLS = github.com/mitchellh/gox \
-	  github.com/FiloSottile/gvt \
-
+GOTOOLS = github.com/mitchellh/gox github.com/FiloSottile/gvt
 PACKAGES=$(shell go list ./... | grep -v vendor | sort | uniq)
 BINARY_NAME=$(shell basename ${PWD})
 MAIN_PACKAGE="."
 
-all: format update-deps test build-dist
+all: format init test build-dist
 
 build:
 	@$(CURDIR)/scripts/build.bash $(BINARY_NAME) $(MAIN_PACKAGE) dev
@@ -21,11 +19,15 @@ test:
 	@echo "--> Running Tests"
 	@go test
 
+init:
+	@echo "--> Init build tools"
+	@go get -v $(GOTOOLS)
+
 update-deps:
 	@echo "--> Updating dependencies"
-	@go get -v $(GOTOOLS)
+	@(MAKE) tools
 	@gvt update --all
 
-.PHONY: all build build-dist format test update-deps
+.PHONY: all build build-dist format init test update-deps
 
 
