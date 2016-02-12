@@ -15,7 +15,7 @@ $GOPATH/bin/goflat --help
 Built with Go 1.5.2 and `GO15VENDOREXPERIMENT` flag.
 ```
 git clone https://github.com/aminjam/goflat.git && cd goflat
-make update-deps
+make init
 make build
 ./pkg/*/goflat --help
 ```
