@@ -25,7 +25,7 @@ init:
 
 update-deps:
 	@echo "--> Updating dependencies"
-	@(MAKE) tools
+	@$(MAKE) init
 	@gvt update --all
 
 .PHONY: all build build-dist format init test update-deps
