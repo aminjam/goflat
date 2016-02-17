@@ -3,6 +3,7 @@ package goflat
 import (
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -63,46 +64,12 @@ func (f *Flat) mainGo() error {
 		return err
 	}
 	defer main.Close()
-	var tmpl = template.Must(template.New("main").Parse(`package main
-import (
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"os"
-	"strings"
-	"text/template"
-)
-func checkError(err error, detail string) {
+
+	data, err := ioutil.ReadFile("main.gotempl")
 	if err != nil {
-		fmt.Printf("Fatal error %s: %s ", detail, err.Error())
-		os.Exit(1)
+		return err
 	}
-}
-func main() {
-	data, err := ioutil.ReadFile("{{.GoTemplate}}")
-	checkError(err, "reading template file")
-	fm := template.FuncMap{
-		"join":	strings.Join,
-	}
-	tmpl, err := template.New("").Funcs(fm).Parse(string(data))
-	checkError(err, "parsing template file")
-	var result struct {
-{{if gt (len .GoInputs) 0}}
-{{range .GoInputs}}
-		{{.StructName}} {{.StructName}}
-{{end}}
-{{end}}
-	}
-{{if gt (len .GoInputs) 0}}
-{{range .GoInputs}}
-	result.{{.StructName}} = New{{.StructName}}()
-{{end}}
-{{end}}
-	var output bytes.Buffer
-	err = tmpl.Execute(&output, result)
-	checkError(err, "executing template output")
-	fmt.Println(string(output.Bytes()))
-}`))
+	var tmpl = template.Must(template.New("main").Parse(string(data)))
 	if err := tmpl.Execute(main, f); err != nil {
 		return err
 	}
