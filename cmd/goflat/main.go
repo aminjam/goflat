@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/aminjam/goflat"
 	"github.com/jessevdk/go-flags"
 )
 
@@ -32,7 +33,7 @@ func main() {
 	}
 	defer os.RemoveAll(baseDir)
 
-	b, err := NewFlat(baseDir, args.Template, args.Inputs)
+	b, err := goflat.NewFlat(baseDir, args.Template, args.Inputs)
 	checkError(err)
 	b.GoRun(os.Stdout, os.Stderr)
 }

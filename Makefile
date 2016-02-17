@@ -4,7 +4,7 @@ FILES=$(shell find . -name "*.go" -type f | grep -v vendor)
 VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods \
          -nilfunc -printf -rangeloops -shift -structtags -unsafeptr
 BINARY_NAME=$(shell basename ${PWD})
-MAIN_PACKAGE="."
+MAIN_PACKAGE="./cmd/goflat"
 
 all: format init test vet build-dist
 
