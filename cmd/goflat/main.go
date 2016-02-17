@@ -23,7 +23,7 @@ func main() {
 	checkError(err)
 
 	if args.Version {
-		fmt.Println(Version + VersionPrerelease)
+		fmt.Println(goflat.Version + goflat.VersionPrerelease)
 		os.Exit(0)
 	}
 
