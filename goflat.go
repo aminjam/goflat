@@ -12,10 +12,10 @@ import (
 
 //Flat struct
 type Flat struct {
-	BaseDir  string
-	mainFile string
-	Template string
-	Inputs   []struct{ Path, StructName, VarName string }
+	BaseDir    string
+	mainFile   string
+	GoTemplate string
+	GoInputs   []struct{ Path, StructName, VarName string }
 }
 
 func (f *Flat) cp(file string) (string, error) {
@@ -42,16 +42,16 @@ func (f *Flat) cp(file string) (string, error) {
 	return outFile, cerr
 }
 
-func (f *Flat) setInputs(files []string) error {
+func (f *Flat) setGoInputs(files []string) error {
 	for k, v := range files {
-		orgFile, structName := extractNames(v)
+		orgFile, structName := splitGoInput(v)
 		file, err := f.cp(orgFile)
 		if err != nil {
 			return fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 		}
-		f.Inputs[k].Path = file
-		f.Inputs[k].StructName = structName
-		f.Inputs[k].VarName = strings.ToLower(structName)
+		f.GoInputs[k].Path = file
+		f.GoInputs[k].StructName = structName
+		f.GoInputs[k].VarName = strings.ToLower(structName)
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func checkError(err error, detail string) {
 	}
 }
 func main() {
-	data, err := ioutil.ReadFile("{{.Template}}")
+	data, err := ioutil.ReadFile("{{.GoTemplate}}")
 	checkError(err, "reading template file")
 	fm := template.FuncMap{
 		"join":	strings.Join,
@@ -87,14 +87,14 @@ func main() {
 	tmpl, err := template.New("").Funcs(fm).Parse(string(data))
 	checkError(err, "parsing template file")
 	var result struct {
-{{if gt (len .Inputs) 0}}
-{{range .Inputs}}
+{{if gt (len .GoInputs) 0}}
+{{range .GoInputs}}
 		{{.StructName}} {{.StructName}}
 {{end}}
 {{end}}
 	}
-{{if gt (len .Inputs) 0}}
-{{range .Inputs}}
+{{if gt (len .GoInputs) 0}}
+{{range .GoInputs}}
 	result.{{.StructName}} = New{{.StructName}}()
 {{end}}
 {{end}}
@@ -112,9 +112,9 @@ func main() {
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
 func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
-	out := make([]string, len(f.Inputs)+2)
+	out := make([]string, len(f.GoInputs)+2)
 	out[0], out[1] = "run", f.mainFile
-	for k, v := range f.Inputs {
+	for k, v := range f.GoInputs {
 		out[k+2] = v.Path
 	}
 	cmd := exec.Command("go", out...)
@@ -133,12 +133,12 @@ func NewFlat(baseDir, template string, inputs []string) (*Flat, error) {
 		return nil, fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 	}
 	f := &Flat{
-		BaseDir:  baseDir,
-		Template: template,
-		Inputs:   make([]struct{ Path, StructName, VarName string }, len(inputs)),
+		BaseDir:    baseDir,
+		GoTemplate: template,
+		GoInputs:   make([]struct{ Path, StructName, VarName string }, len(inputs)),
 	}
 
-	err := f.setInputs(inputs)
+	err := f.setGoInputs(inputs)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%s", "parsing inputs", err.Error())
 	}
@@ -149,7 +149,7 @@ func NewFlat(baseDir, template string, inputs []string) (*Flat, error) {
 	return f, nil
 }
 
-func extractNames(input string) (fileName string, structName string) {
+func splitGoInput(input string) (fileName string, structName string) {
 	//optionally the structname can be passed via commandline with ":" seperator
 	if strings.Contains(input, ":") {
 		s := strings.Split(input, ":")

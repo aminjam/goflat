@@ -70,7 +70,7 @@ var _ = Describe("GoFlat", func() {
 				Expect(err).To(BeNil())
 
 				var newFile string
-				for _, v := range b.Inputs {
+				for _, v := range b.GoInputs {
 					if filepath.Base(v.Path) == "a-private-note.go" {
 						newFile = v.Path
 						break
@@ -102,7 +102,7 @@ var _ = Describe("GoFlat", func() {
 			It("should successfully copy a valid file", func() {
 				orgFile := filepath.Join(wd, "fixtures", "repos.go")
 				var newFile string
-				for _, v := range flat.Inputs {
+				for _, v := range flat.GoInputs {
 					if filepath.Base(v.Path) == "repos.go" {
 						newFile = v.Path
 						break
@@ -122,9 +122,9 @@ var _ = Describe("GoFlat", func() {
 
 				data, err := ioutil.ReadFile(mainGoFile)
 				Expect(err).To(BeNil())
-				Expect(data).To(ContainSubstring(fmt.Sprintf("data, err := ioutil.ReadFile(\"%s\")", flat.Template)))
+				Expect(data).To(ContainSubstring(fmt.Sprintf("data, err := ioutil.ReadFile(\"%s\")", flat.GoTemplate)))
 				Expect(data).To(ContainSubstring(fmt.Sprintf(
-					"result.%s = New%s()", flat.Inputs[0].StructName, flat.Inputs[0].StructName)))
+					"result.%s = New%s()", flat.GoInputs[0].StructName, flat.GoInputs[0].StructName)))
 			})
 			It("should output the parsed template ", func() {
 				var b bytes.Buffer
