@@ -8,11 +8,11 @@ Building long YAML or JSON files is not fun! Replacing passwords and secrets in 
 
 ### Run as executable
 ```
-go get github.com/aminjam/goflat
+go get github.com/aminjam/goflat/cmd/goflat
 $GOPATH/bin/goflat --help
 ```
 ### Run from source
-Built with Go 1.5.2 and `GO15VENDOREXPERIMENT` flag.
+Built with Go 1.5.3 and `GO15VENDOREXPERIMENT` flag.
 ```
 git clone https://github.com/aminjam/goflat.git && cd goflat
 make init
