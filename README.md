@@ -66,7 +66,7 @@ jobs:
         SECRET: {{$global.Private.Secret}}
 {{end}}
 - name-{{.Private.Secret}}: {{.Private.Password}}
-- comma-seperated-repo-names: {{join .Repos.Names ","}}
+- comma-seperated-repo-names: {{.Repos.Names | join ","}}
 ```
 We have `Repos` and `Private` struct that contain some runtime data that needs to be parsed into the template. Here is a look at the checked-in `private.go`
 
@@ -89,7 +89,7 @@ Each of the input files are required to have 2 things:
 * A struct named after the filename (e.g. filename `hello-world.go` should have `HelloWorld` struct). If the struct name differs from the filename convention, you can optionally provide the name of the struct (e.g. `-i <(lpass show 'file.go' --notes):Private`)
 * A `New{{.StructName}}` function that returns `{{.StructName}}` (e.g. `func NewPrivate() Private{}`)
 
-Similarly, we can also define `repos.go` as an array of objects to use within `{{range .Repos}}`. `goflat` can also use `{{join .StringArray "<delimiter>"}}` functionality that is used in [`go list -f`](https://golang.org/cmd/go/#hdr-List_packages) by defining a method that returns `[]string`.
+Similarly, we can also define `repos.go` as an array of objects to use within `{{range .Repos}}`.
 ```
 package main
 
@@ -127,3 +127,10 @@ Now we can run the example pipeline in the fixtures.
 ```
 goflat -t fixtures/pipeline.yml -i fixtures/repos.go -i fixtures/private.go
 ```
+
+### Pipes "|"
+Pipes can be nested and here are a set of helper functions is currently supported:
+
+- **join**: `{{.List | join "," }}`
+- **toLower**: `{{.Field | toLower }}`
+- **toUpper**: `{{.Field | toUpper }}`
