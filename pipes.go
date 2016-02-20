@@ -15,6 +15,10 @@ func NewPipes() *Pipes {
 			"join": func(sep string, a []string) (string, error) {
 				return strings.Join(a, sep), nil
 			},
+			"replace": func(old, new, s string) (string, error) {
+				//replace all occurrences of a value
+				return strings.Replace(s, old, new, -1), nil
+			},
 			"split": func(sep, s string) ([]string, error) {
 				s = strings.TrimSpace(s)
 				if s == "" {

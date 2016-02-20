@@ -132,6 +132,7 @@ goflat -t fixtures/pipeline.yml -i fixtures/repos.go -i fixtures/private.go
 Pipes can be nested and here are a set of helper functions is currently supported:
 
 - **join**: `{{.List | join "," }}`
+- **replace**: `{{.StringValue | replace "," " " }}`
 - **split**: `{{.StringValue | split "," }}`
 - **toLower**: `{{.Field | toLower }}`
 - **toUpper**: `{{.Field | toUpper }}`

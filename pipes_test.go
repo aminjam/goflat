@@ -34,6 +34,13 @@ var _ = Describe("Pipes", func() {
 			err = tmpl.Execute(buffer, []string{"a", "b"})
 			Eventually(buffer).Should(gbytes.Say(`a,b`))
 		})
+		It("should validate replace method", func() {
+			const text = `{{ . | replace "A" "D" }}`
+			tmpl, err := tmpl.Parse(text)
+			Expect(err).To(BeNil())
+			err = tmpl.Execute(buffer, "AbCDAa")
+			Eventually(buffer).Should(gbytes.Say(`DbCDDa`))
+		})
 		It("should validate split method", func() {
 			const text = `{{ range (. | split " ") }}{{.}}-item {{end}}`
 			tmpl, err := tmpl.Parse(text)
