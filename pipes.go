@@ -15,6 +15,13 @@ func NewPipes() *Pipes {
 			"join": func(sep string, a []string) (string, error) {
 				return strings.Join(a, sep), nil
 			},
+			"split": func(sep, s string) ([]string, error) {
+				s = strings.TrimSpace(s)
+				if s == "" {
+					return []string{}, nil
+				}
+				return strings.Split(s, sep), nil
+			},
 			"toUpper": func(s string) (string, error) {
 				return strings.ToUpper(s), nil
 			},
