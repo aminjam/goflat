@@ -13,10 +13,11 @@ import (
 
 //Flat struct
 type Flat struct {
-	BaseDir    string
-	mainFile   string
-	GoTemplate string
-	GoInputs   []struct{ Path, StructName, VarName string }
+	BaseDir     string
+	mainFile    string
+	GoTemplate  string
+	GoInputs    []struct{ Path, StructName, VarName string }
+	GoPipesPath string
 }
 
 func (f *Flat) cp(file string) (string, error) {
@@ -41,6 +42,21 @@ func (f *Flat) cp(file string) (string, error) {
 		return "", err
 	}
 	return outFile, cerr
+}
+
+func (f *Flat) pipes() error {
+	data, err := ioutil.ReadFile("pipes.go")
+	if err != nil {
+		return err
+	}
+	content := strings.Replace(string(data), "package goflat", "package main", -1)
+	outFile := filepath.Join(f.BaseDir, "pipes.go")
+	err = ioutil.WriteFile(outFile, []byte(content), 0666)
+	if err != nil {
+		return err
+	}
+	f.GoPipesPath = outFile
+	return nil
 }
 
 func (f *Flat) setGoInputs(files []string) error {
@@ -79,10 +95,10 @@ func (f *Flat) mainGo() error {
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
 func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
-	out := make([]string, len(f.GoInputs)+2)
-	out[0], out[1] = "run", f.mainFile
+	out := make([]string, len(f.GoInputs)+3)
+	out[0], out[1], out[2] = "run", f.mainFile, f.GoPipesPath
 	for k, v := range f.GoInputs {
-		out[k+2] = v.Path
+		out[k+3] = v.Path
 	}
 	cmd := exec.Command("go", out...)
 	cmd.Stdout = outWriter
@@ -108,6 +124,10 @@ func NewFlat(baseDir, template string, inputs []string) (*Flat, error) {
 	err := f.setGoInputs(inputs)
 	if err != nil {
 		return nil, fmt.Errorf("%s:%s", "parsing inputs", err.Error())
+	}
+	err = f.pipes()
+	if err != nil {
+		return nil, fmt.Errorf("%s:%s", "writing pipes.go", err.Error())
 	}
 	err = f.mainGo()
 	if err != nil {
