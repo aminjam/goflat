@@ -32,6 +32,7 @@ var _ = Describe("Pipes", func() {
 			tmpl, err := tmpl.Parse(text)
 			Expect(err).To(BeNil())
 			err = tmpl.Execute(buffer, []string{"a", "b"})
+			Expect(err).To(BeNil())
 			Eventually(buffer).Should(gbytes.Say(`a,b`))
 		})
 		Context("when validating a map method", func() {
@@ -63,6 +64,7 @@ var _ = Describe("Pipes", func() {
 			tmpl, err := tmpl.Parse(text)
 			Expect(err).To(BeNil())
 			err = tmpl.Execute(buffer, "AbCDAa")
+			Expect(err).To(BeNil())
 			Eventually(buffer).Should(gbytes.Say(`DbCDDa`))
 		})
 		It("should validate split method", func() {
@@ -70,6 +72,7 @@ var _ = Describe("Pipes", func() {
 			tmpl, err := tmpl.Parse(text)
 			Expect(err).To(BeNil())
 			err = tmpl.Execute(buffer, "AB CD")
+			Expect(err).To(BeNil())
 			Eventually(buffer).Should(gbytes.Say(`AB-item CD-item `))
 		})
 		It("should validate toUpper method", func() {
@@ -77,6 +80,7 @@ var _ = Describe("Pipes", func() {
 			tmpl, err := tmpl.Parse(text)
 			Expect(err).To(BeNil())
 			err = tmpl.Execute(buffer, "abA")
+			Expect(err).To(BeNil())
 			Eventually(buffer).Should(gbytes.Say(`ABA`))
 		})
 		It("should validate toLower method", func() {
@@ -84,6 +88,7 @@ var _ = Describe("Pipes", func() {
 			tmpl, err := tmpl.Parse(text)
 			Expect(err).To(BeNil())
 			err = tmpl.Execute(buffer, "BaBA")
+			Expect(err).To(BeNil())
 			Eventually(buffer).Should(gbytes.Say(`baba`))
 		})
 	})
