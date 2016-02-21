@@ -34,6 +34,30 @@ var _ = Describe("Pipes", func() {
 			err = tmpl.Execute(buffer, []string{"a", "b"})
 			Eventually(buffer).Should(gbytes.Say(`a,b`))
 		})
+		Context("when validating a map method", func() {
+			type Tester struct{ Name, Job string }
+			t := []Tester{
+				{"John", "Jabber"},
+				{"Cherry", "Chatter"},
+			}
+
+			It("should accepet a single Field", func() {
+				const text = `{{ . | map "Job" "|" }}`
+				tmpl, err := tmpl.Parse(text)
+				Expect(err).To(BeNil())
+				err = tmpl.Execute(buffer, t)
+				Expect(err).To(BeNil())
+				Eventually(buffer).Should(gbytes.Say("Jabber Chatter"))
+			})
+			It("should accepet a comma seperated fields", func() {
+				const text = `{{ . | map "Job,Name" "." }}`
+				tmpl, err := tmpl.Parse(text)
+				Expect(err).To(BeNil())
+				err = tmpl.Execute(buffer, t)
+				Expect(err).To(BeNil())
+				Eventually(buffer).Should(gbytes.Say("Jabber.John Chatter.Cherry"))
+			})
+		})
 		It("should validate replace method", func() {
 			const text = `{{ . | replace "A" "D" }}`
 			tmpl, err := tmpl.Parse(text)
