@@ -1,0 +1,23 @@
+
+{ "repos" : [
+  
+  
+  { "name": "repo1",
+    "uri": "https://github.com/jane/repo1",
+    "branch": "master",
+    "passord": "team3"
+  }
+  
+  
+  
+  ,{ "name": "repo2",
+    "uri": "https://github.com/john/repo2",
+    "branch": "develop",
+    "passord": "team3"
+  }
+  
+  
+],
+"names": "repo1,repo2"
+}
+

@@ -126,19 +126,69 @@ var _ = Describe("GoFlat", func() {
 				Expect(data).To(ContainSubstring(fmt.Sprintf(
 					"result.%s = New%s()", flat.GoInputs[0].StructName, flat.GoInputs[0].StructName)))
 			})
-			It("should output the parsed template ", func() {
-				var b bytes.Buffer
-				writer := bufio.NewWriter(&b)
-				err := flat.GoRun(writer, writer)
-				Expect(err).To(BeNil())
-				// copy the output in a separate goroutine so printing can't block indefinitely
-				result_file := filepath.Join(wd, ".examples", "output.yml")
-				result, err := ioutil.ReadFile(result_file)
-				Expect(err).To(BeNil())
+		})
+	})
+	Context("when running the examples templates", func() {
+		wd, _ := os.Getwd()
+		inputFiles := []string{
+			filepath.Join(wd, ".examples", "inputs", "private.go") + ":Private",
+			filepath.Join(wd, ".examples", "inputs", "repos.go"),
+		}
+		var (
+			tmpDir      string
+			flat        *Flat
+			result      []byte
+			template    string
+			result_file string
+			buffer      bytes.Buffer
+		)
+		BeforeEach(func() {
+			tmpDir, _ = ioutil.TempDir(os.TempDir(), "")
+		})
+		AfterEach(func() {
+			defer os.RemoveAll(tmpDir)
+			buffer.Reset()
+		})
+		JustBeforeEach(func() {
+			b, err := NewFlat(tmpDir, template, inputFiles)
+			Expect(err).To(BeNil())
+			flat = b
+			writer := bufio.NewWriter(&buffer)
+			err = flat.GoRun(writer, writer)
+			Expect(err).To(BeNil())
+			// copy the output in a separate goroutine so printing can't block indefinitely
+			result, err = ioutil.ReadFile(result_file)
+			Expect(err).To(BeNil())
+		})
+		Describe("parsing YAML template", func() {
+			BeforeEach(func() {
+				template = filepath.Join(wd, ".examples", "template.yml")
+				result_file = filepath.Join(wd, ".examples", "output.yml")
+			})
+			It("should show the parsed output", func() {
 				Expect(result).ToNot(BeNil())
-				Expect(b.String()).To(Equal(string(result)))
+				Expect(buffer.String()).To(Equal(string(result)))
 			})
 		})
-
+		Describe("parsing JSON template", func() {
+			BeforeEach(func() {
+				template = filepath.Join(wd, ".examples", "template.json")
+				result_file = filepath.Join(wd, ".examples", "output.json")
+			})
+			It("should show the parsed output", func() {
+				Expect(result).ToNot(BeNil())
+				Expect(buffer.String()).To(Equal(string(result)))
+			})
+		})
+		Describe("parsing XML template", func() {
+			BeforeEach(func() {
+				template = filepath.Join(wd, ".examples", "template.xml")
+				result_file = filepath.Join(wd, ".examples", "output.xml")
+			})
+			It("should show the parsed output", func() {
+				Expect(result).ToNot(BeNil())
+				Expect(buffer.String()).To(Equal(string(result)))
+			})
+		})
 	})
 })

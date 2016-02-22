@@ -1,0 +1,22 @@
+
+<root>
+  <repos>
+    
+    <repo>
+      <name>repo1</name>
+      <uri>https://github.com/jane/repo1</uri>
+      <branch>master</branch>
+      <password>team3</password>
+    </repo>
+    
+    <repo>
+      <name>repo2</name>
+      <uri>https://github.com/john/repo2</uri>
+      <branch>develop</branch>
+      <password>team3</password>
+    </repo>
+    
+  </repos>
+  <names>repo1,repo2</names>
+</root>
+

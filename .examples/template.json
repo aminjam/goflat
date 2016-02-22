@@ -1,0 +1,20 @@
+{{ $global := . }}
+{ "repos" : [
+  {{range $index, $elm := .Repos}}
+  {{if $index}}
+  ,{ "name": "{{.Name}}",
+    "uri": "{{.Repo}}",
+    "branch": "{{.Branch}}",
+    "passord": "{{$global.Private.Password}}"
+  }
+  {{else}}
+  { "name": "{{.Name}}",
+    "uri": "{{.Repo}}",
+    "branch": "{{.Branch}}",
+    "passord": "{{$global.Private.Password}}"
+  }
+  {{end}}
+  {{end}}
+],
+"names": "{{.Repos.Names | join "," }}"
+}

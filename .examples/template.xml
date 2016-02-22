@@ -1,0 +1,14 @@
+{{ $global := . }}
+<root>
+  <repos>
+    {{range .Repos}}
+    <repo>
+      <name>{{.Name}}</name>
+      <uri>{{.Repo}}</uri>
+      <branch>{{.Branch}}</branch>
+      <password>{{$global.Private.Password}}</password>
+    </repo>
+    {{end}}
+  </repos>
+  <names>{{.Repos.Names | join ","}}</names>
+</root>
