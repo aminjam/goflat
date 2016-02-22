@@ -27,7 +27,7 @@ var _ = Describe("GoFlat", func() {
 			tmpDir, _ := ioutil.TempDir(os.TempDir(), "")
 			defer os.RemoveAll(tmpDir)
 			wd, _ := os.Getwd()
-			template := filepath.Join(wd, "fixtures", "pipeline.yml")
+			template := filepath.Join(wd, ".examples", "template.yml")
 
 			invalid_input_files := []string{"/WRONG/FILE", "WRONG/ANOTHER/FILES"}
 
@@ -53,17 +53,17 @@ var _ = Describe("GoFlat", func() {
 	})
 	Context("", func() {
 		wd, _ := os.Getwd()
-		template := filepath.Join(wd, "fixtures", "pipeline.yml")
+		template := filepath.Join(wd, ".examples", "template.yml")
 		inputFiles := []string{
-			filepath.Join(wd, "fixtures", "private.go") + ":Private",
-			filepath.Join(wd, "fixtures", "repos.go"),
+			filepath.Join(wd, ".examples", "inputs", "private.go") + ":Private",
+			filepath.Join(wd, ".examples", "inputs", "repos.go"),
 		}
 
 		Describe("When input is not from a .go extension file", func() {
 			It("should successfully copy the file with an attached extension", func() {
 				tmpDir, _ := ioutil.TempDir(os.TempDir(), "")
 				defer os.RemoveAll(tmpDir)
-				orgFile := filepath.Join(wd, "fixtures", "a-private-note")
+				orgFile := filepath.Join(wd, ".examples", "inputs", "a-private-note")
 				b, err := NewFlat(tmpDir, template, []string{
 					orgFile + ":Private",
 				})
@@ -100,7 +100,7 @@ var _ = Describe("GoFlat", func() {
 			})
 
 			It("should successfully copy a valid file", func() {
-				orgFile := filepath.Join(wd, "fixtures", "repos.go")
+				orgFile := filepath.Join(wd, ".examples", "inputs", "repos.go")
 				var newFile string
 				for _, v := range flat.GoInputs {
 					if filepath.Base(v.Path) == "repos.go" {
@@ -132,7 +132,7 @@ var _ = Describe("GoFlat", func() {
 				err := flat.GoRun(writer, writer)
 				Expect(err).To(BeNil())
 				// copy the output in a separate goroutine so printing can't block indefinitely
-				result_file := filepath.Join(wd, "fixtures", "result.yml")
+				result_file := filepath.Join(wd, ".examples", "output.yml")
 				result, err := ioutil.ReadFile(result_file)
 				Expect(err).To(BeNil())
 				Expect(result).ToNot(BeNil())

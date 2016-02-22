@@ -1,8 +1,8 @@
 # goflat [![Build Status](https://travis-ci.org/aminjam/goflat.png?branch=master)](https://travis-ci.org/aminjam/goflat)
-A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, etc.).
+A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, XML, etc.).
 
 ## Motivation
-Building long YAML or JSON files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
+Building long configuration files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
 
 ## Getting Started
 
@@ -21,10 +21,10 @@ make build
 ```
 ### Usage
 ```
-goflat -t FILE.{yml,json} -i private.go -i teams.go -i repos.go ...
+goflat -t FILE.{yml,json,xml} -i private.go -i teams.go -i repos.go ...
 ```
 ```
-goflat -t FILE.{yml,json} -i <(lpass show 'private.go' --notes):Private
+goflat -t FILE.{yml,json,xml} -i <(lpass show 'private.go' --notes):Private
 ```
 ## Example
 
@@ -122,10 +122,10 @@ func NewRepos() Repos {
 	}
 }
 ```
-Now we can run the example pipeline in the fixtures.
+Now we can run the sample configuration in the `.examples`.
 
 ```
-goflat -t fixtures/pipeline.yml -i fixtures/repos.go -i fixtures/private.go
+goflat -t .examples/template.yml -i .examples/inputs/repos.go -i .examples/inputs/private.go
 ```
 
 ### Pipes "|"
