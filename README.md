@@ -129,7 +129,7 @@ goflat -t .examples/template.yml -i .examples/inputs/repos.go -i .examples/input
 ```
 
 ### Pipes "|"
-Pipes can be nested and here are a set of helper functions is currently supported:
+Pipes can be nested and here is a set of supported helper functions:
 
 - **join**: `{{.List | join "," }}`
 - **map**: `{{.ListOfObjects | map "Name,Age" "|" }}` (comma seperated property names)
