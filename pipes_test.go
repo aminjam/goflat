@@ -1,6 +1,9 @@
 package goflat_test
 
 import (
+	"encoding/base64"
+	"errors"
+	"strings"
 	"text/template"
 
 	. "github.com/aminjam/goflat"
@@ -12,21 +15,58 @@ import (
 
 var _ = Describe("Pipes", func() {
 	var (
-		pipes *Pipes
+		pipes  *Pipes
+		tmpl   *template.Template
+		buffer *gbytes.Buffer
 	)
 	BeforeEach(func() {
 		pipes = NewPipes()
+		tmpl = template.New("tester").Funcs(pipes.Map)
+		buffer = gbytes.NewBuffer()
 	})
 
-	Describe("when testing default pipes", func() {
-		var (
-			tmpl   *template.Template
-			buffer *gbytes.Buffer
-		)
-		BeforeEach(func() {
-			tmpl = template.New("tester").Funcs(pipes.Map)
-			buffer = gbytes.NewBuffer()
+	Describe("when extending default pipes", func() {
+		JustBeforeEach(func() {
+			fm := template.FuncMap{
+				"join": func(a []string) (string, error) {
+					return strings.Join(a, ":-)"), nil
+				},
+				"base64": func(method string, a string) (string, error) {
+					if method == "encode" {
+						return base64.StdEncoding.EncodeToString([]byte(a)), nil
+					} else if method == "decode" {
+						out, err := base64.StdEncoding.DecodeString(a)
+						return string(out), err
+					} else {
+						return "", errors.New("method not found")
+					}
+				},
+			}
+			pipes.Extend(fm)
 		})
+		It("should add base64 method", func() {
+			const text = `{{ . | base64 "encode" }}`
+			tmpl := template.New("tester").Funcs(pipes.Map)
+			tmpl, err := tmpl.Parse(text)
+			Expect(err).To(BeNil())
+			buffer := gbytes.NewBuffer()
+			err = tmpl.Execute(buffer, "abcd")
+			Expect(err).To(BeNil())
+			Eventually(buffer).Should(gbytes.Say(`YWJjZA==`))
+		})
+		It("should override the joins method", func() {
+			const text = `{{ . | join }}`
+			tmpl := template.New("tester").Funcs(pipes.Map)
+			tmpl, err := tmpl.Parse(text)
+			Expect(err).To(BeNil())
+			buffer := gbytes.NewBuffer()
+			err = tmpl.Execute(buffer, []string{"a", "b"})
+			Expect(err).To(BeNil())
+			Eventually(buffer).Should(gbytes.Say(`a\:\-\)b`))
+		})
+	})
+
+	Describe("when using default pipes", func() {
 		It("should validate joins method", func() {
 			const text = `{{ . | join "," }}`
 			tmpl, err := tmpl.Parse(text)

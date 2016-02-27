@@ -10,6 +10,12 @@ type Pipes struct {
 	Map template.FuncMap
 }
 
+func (p *Pipes) Extend(fm template.FuncMap) {
+	for k, v := range fm {
+		p.Map[k] = v
+	}
+}
+
 func NewPipes() *Pipes {
 	return &Pipes{
 		Map: template.FuncMap{
