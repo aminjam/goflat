@@ -33,9 +33,18 @@ func main() {
 	}
 	defer os.RemoveAll(baseDir)
 
-	b, err := goflat.NewFlat(baseDir, args.Template, args.Inputs)
+	builder, err := goflat.NewFlatBuilder(baseDir, args.Template)
+	err = builder.EvalGoInputs(args.Inputs)
 	checkError(err)
-	b.GoRun(os.Stdout, os.Stderr)
+	err = builder.EvalGoPipes()
+	checkError(err)
+	err = builder.EvalMainGo()
+	checkError(err)
+
+	flat := builder.Flat()
+	err = flat.GoRun(os.Stdout, os.Stderr)
+	checkError(err)
+
 }
 
 func tmpDir() (string, error) {
