@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
@@ -12,7 +13,7 @@ import (
 
 type FlatBuilder interface {
 	EvalGoInputs(files []string) error
-	EvalGoPipes() error
+	EvalGoPipes(file string) error
 	EvalMainGo() error
 	Flat() *Flat
 }
@@ -61,18 +62,20 @@ func (builder *flatBuilder) EvalGoInputs(files []string) error {
 	return nil
 }
 
-func (builder *flatBuilder) EvalGoPipes() error {
-	data, err := ioutil.ReadFile("pipes.go")
+func (builder *flatBuilder) EvalGoPipes(file string) error {
+	defaultPipes, err := builder.defaultPipes()
 	if err != nil {
 		return err
 	}
-	content := strings.Replace(string(data), "package goflat", "package main", -1)
-	outFile := filepath.Join(builder.baseDir, "pipes.go")
-	err = ioutil.WriteFile(outFile, []byte(content), 0666)
-	if err != nil {
-		return err
+	builder.flat.DefaultPipes = defaultPipes
+
+	if file != "" {
+		customPipes, err := builder.cp(file)
+		if err != nil {
+			return fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
+		}
+		builder.flat.CustomPipes = customPipes
 	}
-	builder.flat.GoPipes = outFile
 	return nil
 }
 
@@ -116,6 +119,31 @@ func NewFlatBuilder(baseDir, template string) (FlatBuilder, error) {
 	}
 
 	return builder, nil
+}
+
+func (builder *flatBuilder) defaultPipes() (string, error) {
+	data, err := ioutil.ReadFile("pipes.go")
+	if err != nil {
+		return "", err
+	}
+	content := strings.Replace(string(data), "package goflat", "package main", -1)
+	outFile := filepath.Join(builder.baseDir, nameGenerator())
+	err = ioutil.WriteFile(outFile, []byte(content), 0666)
+	if err != nil {
+		return "", err
+	}
+	return outFile, nil
+}
+
+func nameGenerator() string {
+	var alpha = "abcdefghijkmnpqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ23456789"
+
+	size := 10
+	buf := make([]byte, size)
+	for i := 0; i < size; i++ {
+		buf[i] = alpha[rand.Intn(len(alpha))]
+	}
+	return string(buf) + ".go"
 }
 
 const (

@@ -27,12 +27,40 @@ var _ = Describe("GoFlat", func() {
 		defer os.RemoveAll(tmpDir)
 	})
 
+	Context("when defining custom pipes", func() {
+		It("should override and extend default pipes", func() {
+			templateDir, _ := ioutil.TempDir(os.TempDir(), "")
+			defer os.RemoveAll(templateDir)
+			template := filepath.Join(templateDir, "test")
+			err := ioutil.WriteFile(template, []byte(`Hello {{"oink oink oink" | replace "k" "ky"}}, tell us a {{"SECRET" | sanitize}}.`), 0666)
+			Expect(err).To(BeNil())
+			customPipes := filepath.Join(examples, "pipes", "pipes.go")
+
+			builder, err := NewFlatBuilder(tmpDir, template)
+			Expect(err).To(BeNil())
+
+			err = builder.EvalGoPipes(customPipes)
+			Expect(err).To(BeNil())
+			err = builder.EvalMainGo()
+			Expect(err).To(BeNil())
+
+			var buffer bytes.Buffer
+			writer := bufio.NewWriter(&buffer)
+			flat := builder.Flat()
+			err = flat.GoRun(writer, writer)
+			Expect(err).To(BeNil())
+
+			Expect(buffer.String()).To(ContainSubstring("Hello oinky oink oink, tell us a TERCES."))
+		})
+	})
+
 	Context("when running the examples templates", func() {
 		var (
 			result      []byte
-			template    string
 			result_file string
 			buffer      bytes.Buffer
+
+			template string
 		)
 		AfterEach(func() {
 			buffer.Reset()
@@ -47,7 +75,7 @@ var _ = Describe("GoFlat", func() {
 			}
 			err = builder.EvalGoInputs(inputFiles)
 			Expect(err).To(BeNil())
-			err = builder.EvalGoPipes()
+			err = builder.EvalGoPipes("")
 			Expect(err).To(BeNil())
 			err = builder.EvalMainGo()
 			Expect(err).To(BeNil())

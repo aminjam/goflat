@@ -9,18 +9,22 @@ import (
 
 //Flat struct
 type Flat struct {
-	MainGo     string
-	GoTemplate string
-	GoInputs   []goInput
-	GoPipes    string
+	MainGo       string
+	GoTemplate   string
+	GoInputs     []goInput
+	DefaultPipes string
+	CustomPipes  string
 }
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
 func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
-	out := make([]string, len(f.GoInputs)+3)
-	out[0], out[1], out[2] = "run", f.MainGo, f.GoPipes
-	for k, v := range f.GoInputs {
-		out[k+3] = v.Path
+	out := []string{"run", f.MainGo, f.DefaultPipes}
+
+	if f.CustomPipes != "" {
+		out = append(out, f.CustomPipes)
+	}
+	for _, v := range f.GoInputs {
+		out = append(out, v.Path)
 	}
 	cmd := exec.Command("go", out...)
 	cmd.Stdout = outWriter

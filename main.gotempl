@@ -16,6 +16,9 @@ func main() {
   data, err := ioutil.ReadFile("{{.GoTemplate}}")
     checkError(err, "reading template file")
     pipes := NewPipes()
+    {{if ne .CustomPipes ""}}
+    pipes.Extend(CustomPipes())
+    {{end}}
     tmpl, err := template.New("").Funcs(pipes.Map).Parse(string(data))
     checkError(err, "parsing template file")
     var result struct {

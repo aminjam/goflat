@@ -91,6 +91,27 @@ var _ = Describe("GoFlatBuilder", func() {
 			Expect(orgFileInfo.Size()).To(Equal(newFileInfo.Size()))
 		})
 	})
+	Context("#EvalGoPipes", func() {
+		var builder FlatBuilder
+		BeforeEach(func() {
+			var err error
+			template := filepath.Join(examples, "template.yml")
+			builder, err = NewFlatBuilder(tmpDir, template)
+			Expect(err).To(BeNil())
+		})
+		It("should create destination input file", func() {
+			pipesFile := filepath.Join(examples, "pipes", "pipes.go")
+			err := builder.EvalGoPipes(pipesFile)
+			Expect(err).To(BeNil())
+			flat := builder.Flat()
+			Expect(flat.CustomPipes).ToNot(BeEmpty())
+
+			newFileInfo, err := os.Stat(flat.CustomPipes)
+			Expect(err).To(BeNil())
+			orgFileInfo, _ := os.Stat(pipesFile)
+			Expect(orgFileInfo.Size()).To(Equal(newFileInfo.Size()))
+		})
+	})
 	Context("#EvalMainGo", func() {
 		It("should have created main.go", func() {
 			var (

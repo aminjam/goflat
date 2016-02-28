@@ -137,3 +137,11 @@ Pipes can be nested and here is a set of supported helper functions:
 - **split**: `{{.StringValue | split "," }}`
 - **toLower**: `{{.Field | toLower }}`
 - **toUpper**: `{{.Field | toUpper }}`
+
+You can optionally define a custom list of helper functions that overrides or extends the behavior of the default pipes. See [an exmaple](.examples/pipes/pipes.go) file that can optionally be passed via `--pipes` flag. Note that the function signature has to be the following:
+
+```
+func CustomPipes() tempate.FuncMap {
+...
+}
+```
