@@ -13,6 +13,7 @@ import (
 type command struct {
 	Template string   `short:"t" long:"template" description:"Template Path e.g. /PATH/TO/file.{yml,json}"`
 	Inputs   []string `short:"i" long:"inputs" description:"Path to input files e.g. PATH/TO/privte.go [optional ':' struct name]"`
+	Pipes    string   `short:"p" long:"pipes" description:"User defined pipes e.g. /PATH/TO/pipes.go"`
 	Version  bool     `short:"v" long:"version" description:"Show version"`
 }
 
@@ -33,9 +34,18 @@ func main() {
 	}
 	defer os.RemoveAll(baseDir)
 
-	b, err := goflat.NewFlat(baseDir, args.Template, args.Inputs)
+	builder, err := goflat.NewFlatBuilder(baseDir, args.Template)
+	err = builder.EvalGoInputs(args.Inputs)
 	checkError(err)
-	b.GoRun(os.Stdout, os.Stderr)
+	err = builder.EvalGoPipes(args.Pipes)
+	checkError(err)
+	err = builder.EvalMainGo()
+	checkError(err)
+
+	flat := builder.Flat()
+	err = flat.GoRun(os.Stdout, os.Stderr)
+	checkError(err)
+
 }
 
 func tmpDir() (string, error) {
