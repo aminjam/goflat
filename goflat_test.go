@@ -3,6 +3,7 @@ package goflat_test
 import (
 	"bufio"
 	"bytes"
+	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -25,6 +26,53 @@ var _ = Describe("GoFlat", func() {
 	})
 	AfterEach(func() {
 		defer os.RemoveAll(tmpDir)
+	})
+
+	Context("when invalid builder", func() {
+		var (
+			templateDir string
+			builder     FlatBuilder
+			buffer      bytes.Buffer
+			writer      io.Writer
+		)
+		BeforeEach(func() {
+			templateDir, _ = ioutil.TempDir(os.TempDir(), "")
+			template := filepath.Join(templateDir, "test")
+			err := ioutil.WriteFile(template, []byte(`Hello`), 0666)
+			Expect(err).To(BeNil())
+
+			builder, err = NewFlatBuilder(tmpDir, template)
+			Expect(err).To(BeNil())
+
+			writer = bufio.NewWriter(&buffer)
+		})
+		AfterEach(func() {
+			defer os.RemoveAll(templateDir)
+			buffer.Reset()
+		})
+		It("should catch undefined MainGo and DefaultPipes", func() {
+			flat := builder.Flat()
+			err := flat.GoRun(writer, writer)
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring(ErrMainGoUndefined))
+			Expect(err.Error()).To(ContainSubstring(ErrDefaultPipesUndefined))
+		})
+		It("should catch undefined MainGo", func() {
+			builder.EvalGoPipes("")
+			flat := builder.Flat()
+			err := flat.GoRun(writer, writer)
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).To(ContainSubstring(ErrMainGoUndefined))
+			Expect(err.Error()).ToNot(ContainSubstring(ErrDefaultPipesUndefined))
+		})
+		It("should catch undefined DefaultPipes", func() {
+			builder.EvalMainGo()
+			flat := builder.Flat()
+			err := flat.GoRun(writer, writer)
+			Expect(err).ToNot(BeNil())
+			Expect(err.Error()).ToNot(ContainSubstring(ErrMainGoUndefined))
+			Expect(err.Error()).To(ContainSubstring(ErrDefaultPipesUndefined))
+		})
 	})
 
 	Context("when defining custom pipes", func() {

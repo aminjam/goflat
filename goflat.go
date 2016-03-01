@@ -1,6 +1,7 @@
 package goflat
 
 import (
+	"errors"
 	"io"
 	"os/exec"
 	"path/filepath"
@@ -18,6 +19,10 @@ type Flat struct {
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
 func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
+	err := f.validate()
+	if err != nil {
+		return err
+	}
 	out := []string{"run", f.MainGo, f.DefaultPipes}
 
 	if f.CustomPipes != "" {
@@ -31,6 +36,21 @@ func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
 	cmd.Stderr = errWriter
 
 	return cmd.Run()
+}
+
+func (f *Flat) validate() error {
+	msgs := []string{}
+	if f.MainGo == "" {
+		msgs = append(msgs, ErrMainGoUndefined)
+	}
+	if f.DefaultPipes == "" {
+		msgs = append(msgs, ErrDefaultPipesUndefined)
+	}
+
+	if len(msgs) > 0 {
+		return errors.New(strings.Join(msgs, ","))
+	}
+	return nil
 }
 
 type goInput struct{ Path, StructName, VarName string }
@@ -51,3 +71,8 @@ func newGoInput(input string) goInput {
 		StructName: name,
 	}
 }
+
+const (
+	ErrMainGoUndefined       = "(main func is missing)"
+	ErrDefaultPipesUndefined = "(default pipes file is missing)"
+)
