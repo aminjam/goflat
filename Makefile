@@ -1,4 +1,6 @@
-GOTOOLS = github.com/mitchellh/gox github.com/FiloSottile/gvt
+GOTOOLS = github.com/mitchellh/gox \
+	github.com/FiloSottile/gvt \
+	github.com/onsi/ginkgo/ginkgo
 PACKAGES=$(shell go list ./... | grep -v vendor | sort | uniq)
 FILES=$(shell find . -name "*.go" -type f | grep -v vendor)
 VETARGS?=-asmdecl -atomic -bool -buildtags -copylocks -methods \
