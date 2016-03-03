@@ -1,3 +1,9 @@
+## 0.3.0 (03.01.2016)
+
+### Features
+- Enable user defined pipes e.g. `--pipes FILE.go`
+- A user should be able to override or extend default helper functions
+
 ## 0.2.0 (02.25.2016)
 
 ### Features
