@@ -1,3 +1,8 @@
+## 0.3.1 (03.02.2016)
+
+### Bugfix
+- This is a bug-fix that was introduced as of `v0.2.0`. Compiled binary was trying to read off of the fs for the templates and default pipes. By using `go generate` we can still test the behavior of the extensions while embedding the text into the compiled binary.
+
 ## 0.3.0 (03.01.2016)
 
 ### Features
