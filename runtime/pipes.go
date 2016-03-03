@@ -1,4 +1,4 @@
-package goflat
+package runtime
 
 import (
 	"reflect"

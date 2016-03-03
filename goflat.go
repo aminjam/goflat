@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+//go:generate go run scripts/embed_runtime.go
+
 //Flat struct
 type Flat struct {
 	MainGo       string

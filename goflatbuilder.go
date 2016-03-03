@@ -87,11 +87,7 @@ func (builder *flatBuilder) EvalMainGo() error {
 	}
 	defer main.Close()
 
-	data, err := ioutil.ReadFile("main.gotempl")
-	if err != nil {
-		return err
-	}
-	var tmpl = template.Must(template.New("main").Parse(string(data)))
+	var tmpl = template.Must(template.New("main").Parse(MainGotempl))
 	if err := tmpl.Execute(main, builder.flat); err != nil {
 		return err
 	}
@@ -122,13 +118,9 @@ func NewFlatBuilder(baseDir, template string) (FlatBuilder, error) {
 }
 
 func (builder *flatBuilder) defaultPipes() (string, error) {
-	data, err := ioutil.ReadFile("pipes.go")
-	if err != nil {
-		return "", err
-	}
-	content := strings.Replace(string(data), "package goflat", "package main", -1)
+	content := strings.Replace(PipesGo, "package runtime", "package main", -1)
 	outFile := filepath.Join(builder.baseDir, nameGenerator())
-	err = ioutil.WriteFile(outFile, []byte(content), 0666)
+	err := ioutil.WriteFile(outFile, []byte(content), 0666)
 	if err != nil {
 		return "", err
 	}

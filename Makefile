@@ -9,18 +9,25 @@ MAIN_PACKAGE="./cmd/goflat"
 all: format init test vet build-dist
 
 build:
+	@$(MAKE) -s generate
 	@$(CURDIR)/scripts/build.bash $(BINARY_NAME) $(MAIN_PACKAGE) dev
 
 build-dist:
+	@$(MAKE) -s generate
 	@$(CURDIR)/scripts/build.bash $(BINARY_NAME) $(MAIN_PACKAGE)
 
 format:
 	@echo "--> Running go fmt"
 	@go fmt $(PACKAGES)
 
+generate:
+	@echo "--> Running go generate"
+	@go generate
+	@$(MAKE) -s format
+
 test:
 	@echo "--> Running Tests"
-	@go test
+	@ginkgo -r
 
 init:
 	@echo "--> Init build tools"
@@ -42,6 +49,6 @@ vet:
 		echo "and fix them if necessary before submitting the code for reviewal."; \
 	fi
 
-.PHONY: all build build-dist format init test update-deps
+.PHONY: all build build-dist format generate init test update-deps
 
 

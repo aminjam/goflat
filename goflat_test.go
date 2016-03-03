@@ -102,6 +102,43 @@ var _ = Describe("GoFlat", func() {
 		})
 	})
 
+	Context("when current working direction is changed", func() {
+		var wd string
+		BeforeEach(func() {
+			wd, _ = os.Getwd()
+			err := os.Chdir(examples)
+			Expect(err).To(BeNil())
+		})
+		AfterEach(func() {
+			err := os.Chdir(wd)
+			Expect(err).To(BeNil())
+		})
+		It("should run successfully", func() {
+
+			templateDir, _ := ioutil.TempDir(os.TempDir(), "")
+			defer os.RemoveAll(templateDir)
+			template := filepath.Join(templateDir, "test")
+			err := ioutil.WriteFile(template, []byte(`Hello World.`), 0666)
+			Expect(err).To(BeNil())
+
+			builder, err := NewFlatBuilder(tmpDir, template)
+			Expect(err).To(BeNil())
+
+			err = builder.EvalGoPipes("")
+			Expect(err).To(BeNil())
+			err = builder.EvalMainGo()
+			Expect(err).To(BeNil())
+
+			var buffer bytes.Buffer
+			writer := bufio.NewWriter(&buffer)
+			flat := builder.Flat()
+			err = flat.GoRun(writer, writer)
+			Expect(err).To(BeNil())
+
+			Expect(buffer.String()).To(ContainSubstring("Hello World"))
+		})
+	})
+
 	Context("when running the examples templates", func() {
 		var (
 			result      []byte

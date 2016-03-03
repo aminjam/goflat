@@ -1,4 +1,4 @@
-package goflat_test
+package runtime_test
 
 import (
 	"encoding/base64"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"text/template"
 
-	. "github.com/aminjam/goflat"
+	. "github.com/aminjam/goflat/runtime"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
