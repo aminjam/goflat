@@ -4,7 +4,8 @@ resources:
   type: git
   source:
     uri: https://github.com/cloudfoundry/myproject-ci.git
-    private_key: -----BEGIN RSA PRIVATE KEY-----
+    private_key: |
+      -----BEGIN RSA PRIVATE KEY-----
       P1231231313131231231312T2iBZ1jrI6ggQAHH3/LQNd1yN5oa8cE/kS9ll923u
       4ksX0oo0enasdhakjhdakjdshakjshdkajshdakjdhakjdhHz9jtJ8t6165OfIu+
       ApTtie8nAXK9asdhasjdhaksdwequwhequheqiuwheqiuhjsIelc11U4bQN+NKuv

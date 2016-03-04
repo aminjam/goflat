@@ -4,7 +4,8 @@ resources:
   type: git
   source:
     uri: https://github.com/cloudfoundry/myproject-ci.git
-    private_key: {{.Private.Key | split "\n" | join "\n      "}}
+    private_key: |
+      {{.Private.Key | split "\n" | join "\n      "}}
 {{range .Repos}}
 - name: {{.Name}}
   type: git
