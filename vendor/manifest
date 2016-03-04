@@ -4,19 +4,19 @@
 		{
 			"importpath": "github.com/jessevdk/go-flags",
 			"repository": "https://github.com/jessevdk/go-flags",
-			"revision": "97448c91aac742cbca3d020b3e769013a420a06f",
+			"revision": "6b9493b3cb60367edd942144879646604089e3f7",
 			"branch": "master"
 		},
 		{
 			"importpath": "github.com/onsi/ginkgo",
 			"repository": "https://github.com/onsi/ginkgo",
-			"revision": "07d85e6b10c4289c7d612f9b13f45ba36f66d55b",
+			"revision": "ac3d45ddd7ef5c4d7fc4d037b615a81f4d67981e",
 			"branch": "master"
 		},
 		{
 			"importpath": "github.com/onsi/gomega",
 			"repository": "https://github.com/onsi/gomega",
-			"revision": "c72df929b80ef4930aaa75d5e486887ff2f3e06a",
+			"revision": "a1094b2db2d4845621602c667bd4ccf09834544e",
 			"branch": "master"
 		}
 	]
