@@ -37,7 +37,7 @@ init:
 
 update-deps:
 	@echo "--> Updating dependencies"
-	@$(MAKE) init
+	@$(MAKE) -s init
 	@gvt update --all
 
 vet:
