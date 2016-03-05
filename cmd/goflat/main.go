@@ -10,7 +10,7 @@ import (
 	"github.com/jessevdk/go-flags"
 )
 
-type command struct {
+type args struct {
 	Template string   `short:"t" long:"template" description:"Template Path e.g. /PATH/TO/file.{yml,json}"`
 	Inputs   []string `short:"i" long:"inputs" description:"Path to input files e.g. PATH/TO/privte.go [optional ':' struct name]"`
 	Pipes    string   `short:"p" long:"pipes" description:"User defined pipes e.g. /PATH/TO/pipes.go"`
@@ -18,16 +18,7 @@ type command struct {
 }
 
 func main() {
-	var args command
-	parser := flags.NewParser(&args, flags.HelpFlag|flags.PassDoubleDash)
-	_, err := parser.Parse()
-	checkError(err)
-
-	if args.Version {
-		fmt.Println(goflat.Version + goflat.VersionPrerelease)
-		os.Exit(0)
-	}
-
+	args := parseArgs()
 	baseDir, err := tmpDir()
 	if err != nil {
 		checkError(fmt.Errorf("%s:%s", "cannot create temp directory", err.Error()))
@@ -46,6 +37,25 @@ func main() {
 	err = flat.GoRun(os.Stdout, os.Stderr)
 	checkError(err)
 
+}
+
+func parseArgs() *args {
+	if len(os.Args) <= 1 {
+		fmt.Println("Run --help for more help")
+		os.Exit(1)
+	}
+	var args args
+	parser := flags.NewParser(&args, flags.HelpFlag|flags.PrintErrors|flags.PassDoubleDash)
+	_, err := parser.Parse()
+	if err != nil {
+		os.Exit(0)
+	}
+
+	if args.Version {
+		fmt.Println(goflat.Version + goflat.VersionPrerelease)
+		os.Exit(0)
+	}
+	return &args
 }
 
 func tmpDir() (string, error) {
