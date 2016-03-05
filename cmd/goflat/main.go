@@ -56,8 +56,6 @@ func tmpDir() (string, error) {
 
 func checkError(err error) {
 	if err != nil {
-		fmt.Printf("Fatal error %s", err.Error())
-		fmt.Println()
-		os.Exit(1)
+		panic(err)
 	}
 }
