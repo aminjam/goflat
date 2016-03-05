@@ -3,9 +3,11 @@ package goflat
 import (
 	"errors"
 	"io"
+	"math/rand"
 	"os/exec"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 //go:generate go run scripts/embed_runtime.go
@@ -53,6 +55,10 @@ func (f *Flat) validate() error {
 		return errors.New(strings.Join(msgs, ","))
 	}
 	return nil
+}
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
 }
 
 type goInput struct{ Path, StructName, VarName string }
