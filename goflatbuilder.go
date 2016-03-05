@@ -24,11 +24,7 @@ type flatBuilder struct {
 }
 
 func (builder *flatBuilder) cp(file string) (string, error) {
-	base := filepath.Base(file)
-	if !strings.HasSuffix(base, ".go") {
-		base += ".go"
-	}
-	outFile := filepath.Join(builder.baseDir, base)
+	outFile := filepath.Join(builder.baseDir, nameGenerator())
 	in, err := os.Open(file)
 	if err != nil {
 		return "", err
@@ -80,7 +76,7 @@ func (builder *flatBuilder) EvalGoPipes(file string) error {
 }
 
 func (builder *flatBuilder) EvalMainGo() error {
-	outFile := filepath.Join(builder.baseDir, "main.go")
+	outFile := filepath.Join(builder.baseDir, nameGenerator())
 	main, err := os.Create(outFile)
 	if err != nil {
 		return err
