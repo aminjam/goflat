@@ -1,6 +1,9 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -14,6 +17,7 @@ type args struct {
 	Template string   `short:"t" long:"template" description:"Template Path e.g. /PATH/TO/file.{yml,json}"`
 	Inputs   []string `short:"i" long:"inputs" description:"Path to input files e.g. PATH/TO/privte.go [optional ':' struct name]"`
 	Pipes    string   `short:"p" long:"pipes" description:"User defined pipes e.g. /PATH/TO/pipes.go"`
+	Output   string   `short:"o" long:"output" description:"Output Path"`
 	Version  bool     `short:"v" long:"version" description:"Show version"`
 }
 
@@ -34,9 +38,19 @@ func main() {
 	checkError(err)
 
 	flat := builder.Flat()
-	err = flat.GoRun(os.Stdout, os.Stderr)
-	checkError(err)
 
+	var outBuf bytes.Buffer
+	var errBuf bytes.Buffer
+	err = flat.GoRun(bufio.NewWriter(&outBuf), bufio.NewWriter(&errBuf))
+	if err != nil {
+		checkError(errors.New(fmt.Sprintf("%s:%s:%s", err.Error(), errBuf.String(), outBuf.String())))
+	}
+	if args.Output == "" {
+		fmt.Println(outBuf.String())
+	} else {
+		err := ioutil.WriteFile(args.Output, outBuf.Bytes(), 0640)
+		checkError(err)
+	}
 }
 
 func parseArgs() *args {
