@@ -139,6 +139,46 @@ var _ = Describe("GoFlat", func() {
 		})
 	})
 
+	Context("when go packages are missing", func() {
+		It("should go get the needed packages", func() {
+			assetsDir, _ := ioutil.TempDir(os.TempDir(), "")
+			defer os.RemoveAll(assetsDir)
+			template := filepath.Join(assetsDir, "template")
+			err := ioutil.WriteFile(template, []byte(`{{.Object.Name}}`), 0666)
+			Expect(err).To(BeNil())
+			inputFile := filepath.Join(assetsDir, "object.go")
+			err = ioutil.WriteFile(inputFile, []byte(`package main
+			import "gopkg.in/yaml.v2"
+			type Object struct { Name string }
+			func NewObject() Object {
+				o := Object{}
+				yaml.Unmarshal([]byte("name: Jane"), &o)
+				return o
+			}`), 0666)
+			Expect(err).To(BeNil())
+
+			builder, err := NewFlatBuilder(tmpDir, template)
+			Expect(err).To(BeNil())
+
+			err = builder.EvalGoInputs([]string{inputFile})
+			Expect(err).To(BeNil())
+			err = builder.EvalGoPipes("")
+			Expect(err).To(BeNil())
+			err = builder.EvalMainGo()
+			Expect(err).To(BeNil())
+
+			var buffer bytes.Buffer
+			writer := bufio.NewWriter(&buffer)
+			flat := builder.Flat()
+			err = os.Unsetenv("GOPATH")
+			Expect(err).To(BeNil())
+			err = flat.GoRun(writer, writer)
+			Expect(err).To(BeNil())
+
+			Expect(buffer.String()).To(Equal("Jane\n"))
+		})
+	})
+
 	Context("when running the examples templates", func() {
 		var (
 			result      []byte

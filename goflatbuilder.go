@@ -103,10 +103,12 @@ func NewFlatBuilder(baseDir, template string) (FlatBuilder, error) {
 	if _, err := os.Stat(template); err != nil {
 		return nil, fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 	}
+	goPath, _ := filepath.Abs(baseDir)
 	builder := &flatBuilder{
 		baseDir: baseDir,
 		flat: &Flat{
 			GoTemplate: template,
+			goPath:     goPath,
 		},
 	}
 

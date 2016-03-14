@@ -1,9 +1,12 @@
 package goflat
 
 import (
+	"bytes"
 	"errors"
+	"fmt"
 	"io"
 	"math/rand"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -19,11 +22,17 @@ type Flat struct {
 	GoInputs     []goInput
 	DefaultPipes string
 	CustomPipes  string
+
+	goPath string
 }
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
 func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
 	err := f.validate()
+	if err != nil {
+		return err
+	}
+	err = f.goGetImports()
 	if err != nil {
 		return err
 	}
@@ -36,10 +45,38 @@ func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
 		out = append(out, v.Path)
 	}
 	cmd := exec.Command("go", out...)
+	cmd.Env = f.env()
 	cmd.Stdout = outWriter
 	cmd.Stderr = errWriter
 
 	return cmd.Run()
+}
+
+func (f *Flat) goGetImports() error {
+	out := []string{"get", "./..."}
+	cmd := exec.Command("go", out...)
+	cmd.Dir = f.goPath
+	cmd.Env = f.env()
+
+	writer := bytes.NewBufferString("")
+	cmd.Stdout = writer
+	cmd.Stderr = writer
+	err := cmd.Run()
+	if err != nil {
+		return errors.New(fmt.Sprintf("%s:%s", err.Error(), writer.String()))
+	}
+	return nil
+}
+
+func (f *Flat) env() []string {
+	env := environ(os.Environ())
+	old_gopath := os.Getenv("GOPATH")
+	if old_gopath != "" {
+		old_gopath = ":" + old_gopath
+	}
+	env.Unset("GOPATH")
+	gopath := fmt.Sprintf("GOPATH=%s%s", f.goPath, old_gopath)
+	return append(env, gopath)
 }
 
 func (f *Flat) validate() error {
@@ -77,6 +114,20 @@ func newGoInput(input string) goInput {
 	return goInput{
 		Path:       input,
 		StructName: name,
+	}
+}
+
+// environ is a slice of strings representing the environment, in the form "key=value".
+type environ []string
+
+// Unset a single environment variable.
+func (e *environ) Unset(key string) {
+	for i := range *e {
+		if strings.HasPrefix((*e)[i], key+"=") {
+			(*e)[i] = (*e)[len(*e)-1]
+			*e = (*e)[:len(*e)-1]
+			break
+		}
 	}
 }
 
