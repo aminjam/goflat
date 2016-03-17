@@ -11,6 +11,7 @@ import (
 	"strings"
 )
 
+//Builder pattern seems to be the most appropriate structure for building a `Flat` struct
 type FlatBuilder interface {
 	EvalGoInputs(files []string) error
 	EvalGoPipes(file string) error
@@ -52,7 +53,6 @@ func (builder *flatBuilder) EvalGoInputs(files []string) error {
 			return fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 		}
 		gi.Path = file
-		gi.VarName = strings.ToLower(gi.StructName)
 		builder.flat.GoInputs[k] = gi
 	}
 	return nil
@@ -95,7 +95,7 @@ func (builder *flatBuilder) Flat() *Flat {
 	return builder.flat
 }
 
-//NewFlatBuilder initializes a new instance of Flat builder interface
+//NewFlatBuilder initializes a new instance of `FlatBuilder` interface
 func NewFlatBuilder(baseDir, template string) (FlatBuilder, error) {
 	if _, err := os.Stat(baseDir); err != nil {
 		return nil, fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())

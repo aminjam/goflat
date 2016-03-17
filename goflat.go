@@ -96,12 +96,10 @@ func (f *Flat) validate() error {
 	return nil
 }
 
-func init() {
-	rand.Seed(time.Now().UTC().UnixNano())
-}
-
+//goInput struct has the needed structure when parsing the `MainGotempl`
 type goInput struct{ Path, StructName, VarName string }
 
+//goInput initializer for a given path
 func newGoInput(input string) goInput {
 	//optionally the structname can be passed via commandline with ":" seperator
 	if strings.Contains(input, ":") {
@@ -116,6 +114,7 @@ func newGoInput(input string) goInput {
 	return goInput{
 		Path:       input,
 		StructName: name,
+		VarName:    strings.ToLower(name),
 	}
 }
 
@@ -137,3 +136,7 @@ const (
 	ErrMainGoUndefined       = "(main func is missing)"
 	ErrDefaultPipesUndefined = "(default pipes file is missing)"
 )
+
+func init() {
+	rand.Seed(time.Now().UTC().UnixNano())
+}
