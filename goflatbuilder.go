@@ -103,9 +103,14 @@ func NewFlatBuilder(baseDir, template string) (FlatBuilder, error) {
 	if _, err := os.Stat(template); err != nil {
 		return nil, fmt.Errorf("%s:%s", ErrMissingOnDisk, err.Error())
 	}
+
+	src_dir := filepath.Join(baseDir, "src")
+	os.MkdirAll(src_dir, 0777)
+
+	goflatDir, _ := ioutil.TempDir(src_dir, "goflat")
 	goPath, _ := filepath.Abs(baseDir)
 	builder := &flatBuilder{
-		baseDir: baseDir,
+		baseDir: goflatDir,
 		flat: &Flat{
 			GoTemplate: template,
 			goPath:     goPath,

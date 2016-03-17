@@ -24,6 +24,7 @@ type Flat struct {
 	CustomPipes  string
 
 	goPath string
+	cmdEnv []string
 }
 
 //GoRun runs go on the dynamically created main.go with a given stdout and stderr pipe
@@ -32,6 +33,7 @@ func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
 	if err != nil {
 		return err
 	}
+	f.setEnv()
 	err = f.goGetImports()
 	if err != nil {
 		return err
@@ -45,7 +47,7 @@ func (f *Flat) GoRun(outWriter io.Writer, errWriter io.Writer) error {
 		out = append(out, v.Path)
 	}
 	cmd := exec.Command("go", out...)
-	cmd.Env = f.env()
+	cmd.Env = f.cmdEnv
 	cmd.Stdout = outWriter
 	cmd.Stderr = errWriter
 
@@ -56,7 +58,7 @@ func (f *Flat) goGetImports() error {
 	out := []string{"get", "./..."}
 	cmd := exec.Command("go", out...)
 	cmd.Dir = f.goPath
-	cmd.Env = f.env()
+	cmd.Env = f.cmdEnv
 
 	writer := bytes.NewBufferString("")
 	cmd.Stdout = writer
@@ -68,7 +70,7 @@ func (f *Flat) goGetImports() error {
 	return nil
 }
 
-func (f *Flat) env() []string {
+func (f *Flat) setEnv() {
 	env := environ(os.Environ())
 	old_gopath := os.Getenv("GOPATH")
 	if old_gopath != "" {
@@ -76,7 +78,7 @@ func (f *Flat) env() []string {
 	}
 	env.Unset("GOPATH")
 	gopath := fmt.Sprintf("GOPATH=%s%s", f.goPath, old_gopath)
-	return append(env, gopath)
+	f.cmdEnv = append(env, gopath)
 }
 
 func (f *Flat) validate() error {
