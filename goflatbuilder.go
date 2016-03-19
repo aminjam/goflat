@@ -2,13 +2,13 @@ package goflat
 
 import (
 	"fmt"
-	"html/template"
 	"io"
 	"io/ioutil"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strings"
+	"text/template"
 )
 
 //Builder pattern seems to be the most appropriate structure for building a `Flat` struct
