@@ -1,3 +1,7 @@
+## 0.4.0 (03.20.2016)
+- Adding `--output` option for writing to a file.
+- Adding `go get` support for missing imports. For example if `gopkg.in/yaml.v2` is used within an input and not in `GOPATH`, goflat should `go get` the missing dependencies temporarily.
+
 ## 0.3.1 (03.02.2016)
 
 ### Bugfix
