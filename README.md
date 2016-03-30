@@ -132,7 +132,7 @@ goflat -t .examples/template.yml -i .examples/inputs/repos.go -i .examples/input
 Pipes can be nested and here is a set of supported helper functions:
 
 - **join**: `{{.List | join "," }}`
-- **map**: `{{.ListOfObjects | map "Name,Age" "|" }}` (comma seperated property names)
+- **map**: `{{.ListOfObjects | map "Name,Age" "," }}` (',' seperated property names)
 - **replace**: `{{.StringValue | replace "," " " }}`
 - **split**: `{{.StringValue | split "," }}`
 - **toLower**: `{{.Field | toLower }}`
