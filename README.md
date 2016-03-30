@@ -2,7 +2,7 @@
 A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, XML, etc.).
 
 ## Motivation
-Building long configuration files is not fun! Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure?! This way we can build a complex configuration file with inputs coming from different `structs`. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
+Building long configuration files is not fun nor testable. Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure. This way we can build a complex configuration with inputs coming from different `structs` that we can test their behavior indepdendently. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
 
 ## Getting Started
 
@@ -132,7 +132,7 @@ goflat -t .examples/template.yml -i .examples/inputs/repos.go -i .examples/input
 Pipes can be nested and here is a set of supported helper functions:
 
 - **join**: `{{.List | join "," }}`
-- **map**: `{{.ListOfObjects | map "Name,Age" "," }}` (',' seperated property names)
+- **map**: `{{.ListOfObjects | map "Name,Age" "," }}` (comma seperated property names)
 - **replace**: `{{.StringValue | replace "," " " }}`
 - **split**: `{{.StringValue | split "," }}`
 - **toLower**: `{{.Field | toLower }}`
