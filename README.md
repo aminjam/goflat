@@ -2,7 +2,7 @@
 A Go template flattener `goflat` is for creating complex configuration files (JSON, YAML, XML, etc.).
 
 ## Motivation
-Building long configuration files is not fun nor testable. Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure. This way we can build a complex configuration with inputs coming from different `structs` that we can test their behavior indepdendently. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
+Building long configuration files is not fun nor testable. Replacing passwords and secrets in a configuration file is usually done with regex and sometimes it's unpredictable! Why not use go templates, along with individual `.go` input files, that know how to unmarshall and parse their own data structure. This way we can build a complex configuration with inputs coming from different `structs` that we can test their behavior independently. That is what `goflat` does. A small and simple go template flattener that uses go runtime to dynamically create a template for parsing go structs.
 
 ## Getting Started
 
